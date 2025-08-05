@@ -6,7 +6,6 @@
   <title>Отзывы GamePay</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -19,9 +18,7 @@
     <section class="rating">
       <div class="score">⭐ 4.9 / 5</div>
       <div class="stars-bar">
-        <div class="stars">
-          <span>★★★★★</span>
-        </div>
+        <span>★★★★★</span>
         <p class="rating-text">На основе 100+ отзывов</p>
       </div>
     </section>
@@ -32,6 +29,21 @@
       <button id="load-more">Показать ещё</button>
     </div>
   </div>
+
+  <!-- Плавающая кнопка -->
+  <button id="add-review-btn">✍️ Оставить отзыв</button>
+
+  <!-- Модальное окно -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span id="close-modal">&times;</span>
+      <h2>Оставить отзыв</h2>
+      <input type="text" id="review-name" placeholder="Ваше имя или ник">
+      <textarea id="review-text" placeholder="Ваш отзыв"></textarea>
+      <button id="submit-review">Отправить</button>
+    </div>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>
