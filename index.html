@@ -1,33 +1,27 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Отзывы GamePay</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отзывы GamePay</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
 </head>
 <body>
-  <div class="container">
     <header>
-      <h1>Отзывы GamePay</h1>
-      <p>🚀 Более 100 реальных отзывов от клиентов</p>
+        <h1>Отзывы о GamePay</h1>
+        <p>Реальные отзывы клиентов</p>
     </header>
 
-    <section class="rating">
-      <div class="score">⭐ 4.9 / 5</div>
-      <div class="stars-bar">
-        <span>★★★★★</span>
-        <p class="rating-text">На основе последних заказов</p>
-      </div>
-    </section>
+    <main>
+        <section id="reviews-container">
+            <div id="reviews"></div>
+            <button id="load-more">Показать ещё</button>
+        </section>
+    </main>
 
-    <section class="reviews" id="reviews"></section>
-    <div class="load-more-container">
-      <button id="load-more">Показать ещё</button>
-    </div>
-  </div>
-  <script src="script.js"></script>
+    <footer>
+        <p>© 2025 GamePay. Все права защищены.</p>
+    </footer>
 </body>
 </html>
