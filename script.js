@@ -1,4 +1,6 @@
 const roflNames = ["Пудж","Эщкере","сигмооо бой","олежаа"];
+const femaleEndings = ["а","я","ва","на","ая","ина","ева","ова"];
+
 const englishAvatars = [
   "https://i.ibb.co/HPpQvjm/anime1.jpg",
   "https://i.ibb.co/sqWknXy/anime2.jpg",
@@ -14,16 +16,19 @@ const roflAvatars = [
 const names = [
   "Иван Иванов","Мария Смирнова","Алексей Кузнецов","Ольга Петрова","Дмитрий Соколов",
   "Пудж","Эщкере","сигмооо бой","олежаа","DarkKnight","ShadowX","PixelMaster","TurboDude","NeoHunter",
-  "Виталий Орлов","Егор Панкратов","Антон Белый","Сергей Чернов","Никита Громов"
+  "Виталий Орлов","Егор Панкратов","Антон Белый","Сергей Чернов","Никита Громов",
+  "Анастасия Орлова","Светлана Миронова","Екатерина Павлова","Ирина Соколова"
 ];
 
-const texts = [
-  "Алмазы пришли за пару минут!",
-  "Гемы прилетели моментально 🔥",
-  "Робуксы зашли без проблем!",
-  "Гемы реально бустят аккаунт!",
-  "Алмазы заказывал не первый раз — всё супер!",
-  "Робаксы получил быстро, админы красавцы!"
+const textsMale = [
+  "Заказ пришёл быстро, всё отлично!",
+  "Оплатил и получил робуксы моментально!",
+  "Гемы прилетели, доволен сервисом 🔥"
+];
+const textsFemale = [
+  "Заказала алмазы, пришли быстро!",
+  "Получила робуксы без проблем ❤️",
+  "Гемы купила — всё супер!"
 ];
 
 function randomDate() {
@@ -34,25 +39,30 @@ function randomDate() {
 }
 
 function avatarForName(name) {
-  if (/\s/.test(name)) { 
-    const gender = Math.random() > 0.5 ? 'men' : 'women';
+  if (roflNames.includes(name)) return roflAvatars[Math.floor(Math.random()*roflAvatars.length)];
+  if (/\s/.test(name)) {
+    const firstName = name.split(" ")[0].toLowerCase();
+    const isFemale = femaleEndings.some(end => firstName.endsWith(end));
+    const gender = isFemale ? 'women' : 'men';
     return `https://randomuser.me/api/portraits/${gender}/${Math.floor(Math.random()*90)}.jpg`;
   }
-  if (roflNames.includes(name)) return roflAvatars[Math.floor(Math.random()*roflAvatars.length)];
   return englishAvatars[Math.floor(Math.random()*englishAvatars.length)];
 }
 
 function createStars(r) { return "★".repeat(r)+"☆".repeat(5-r); }
 
-const reviews = Array.from({length: 100}, () => ({
-  name: names[Math.floor(Math.random()*names.length)],
-  avatar: "",
-  date: randomDate(),
-  text: texts[Math.floor(Math.random()*texts.length)],
-  rating: Math.random() > 0.2 ? 5 : 4
-}));
-
-reviews.forEach(r => r.avatar = avatarForName(r.name));
+const reviews = Array.from({length: 100}, () => {
+  const name = names[Math.floor(Math.random()*names.length)];
+  const firstName = name.split(" ")[0].toLowerCase();
+  const isFemale = femaleEndings.some(end => firstName.endsWith(end));
+  return {
+    name,
+    avatar: avatarForName(name),
+    date: randomDate(),
+    text: (isFemale ? textsFemale : textsMale)[Math.floor(Math.random() * 3)],
+    rating: Math.random() > 0.2 ? 5 : 4
+  };
+});
 
 let displayed = 0;
 const batch = 12;
@@ -64,13 +74,11 @@ function renderReviews() {
     const div = document.createElement('div');
     div.className = 'review';
     div.innerHTML = `
-      <div class="review-content">
-        <img class="avatar" src="${r.avatar}">
-        <div class="review-name">${r.name}</div>
-        <div class="review-date">${r.date}</div>
-        <div class="review-text">${r.text}</div>
-        <div class="review-stars">${createStars(r.rating)}</div>
-      </div>`;
+      <img class="avatar" src="${r.avatar}">
+      <div class="review-name">${r.name}</div>
+      <div class="review-date">${r.date}</div>
+      <div class="review-text">${r.text}</div>
+      <div class="review-stars">${createStars(r.rating)}</div>`;
     container.appendChild(div);
   }
   displayed+=batch;
@@ -78,26 +86,3 @@ function renderReviews() {
 }
 document.getElementById('load-more').onclick = renderReviews;
 renderReviews();
-
-/* Модалка для отзывов */
-const modal = document.getElementById('modal');
-document.getElementById('add-review-btn').onclick = ()=>modal.style.display='flex';
-document.getElementById('close-modal').onclick = ()=>modal.style.display='none';
-
-document.getElementById('submit-review').onclick = () => {
-  const name = document.getElementById('review-name').value.trim();
-  const text = document.getElementById('review-text').value.trim();
-  if (!name || !text) return alert("Заполните оба поля!");
-  const newReview = {
-    name, 
-    avatar: avatarForName(name),
-    date: new Date().toLocaleDateString('ru-RU'),
-    text,
-    rating: 5
-  };
-  reviews.unshift(newReview);
-  container.innerHTML="";
-  displayed=0;
-  renderReviews();
-  modal.style.display='none';
-};
