@@ -1,26 +1,30 @@
+const roflNames = ["Пудж","Эщкере","сигмооо бой","олежаа"];
+const englishAvatars = [
+  "https://i.ibb.co/HPpQvjm/anime1.jpg",
+  "https://i.ibb.co/sqWknXy/anime2.jpg",
+  "https://i.ibb.co/37gSpjX/game1.jpg",
+  "https://i.ibb.co/4ZKbn4J/game2.jpg"
+];
+const roflAvatars = [
+  "https://i.ibb.co/Z2skQQN/meme1.jpg",
+  "https://i.ibb.co/y5D6bkX/meme2.jpg",
+  "https://i.ibb.co/zH7kP7D/meme3.jpg"
+];
+
 const names = [
   "Иван Иванов","Мария Смирнова","Алексей Кузнецов","Ольга Петрова","Дмитрий Соколов",
   "Пудж","Эщкере","сигмооо бой","олежаа","DarkKnight","ShadowX","PixelMaster","TurboDude","NeoHunter",
-  "Виталий Орлов","Егор Панкратов","Антон Белый","Сергей Чернов","Никита Громов","Маша Лис","FireWolf",
-  "StormBreaker","IronGiant","SilentShadow","GhostRider","NightFury","BluePhoenix","MegaBlast","KingSlayer"
+  "Виталий Орлов","Егор Панкратов","Антон Белый","Сергей Чернов","Никита Громов"
 ];
 
 const texts = [
-  "Алмазы пришли за пару минут, доволен!",
-  "Гемы прилетели моментально, магазин 🔥",
-  "Робуксы зашли без проблем, рекомендую.",
-  "Гемы реально бустят аккаунт, топ.",
+  "Алмазы пришли за пару минут!",
+  "Гемы прилетели моментально 🔥",
+  "Робуксы зашли без проблем!",
+  "Гемы реально бустят аккаунт!",
   "Алмазы заказывал не первый раз — всё супер!",
-  "Робаксы получил быстро, админы красавцы!",
-  "Гемы работают чётко, буду брать ещё.",
-  "Алмазы пришли быстрее чем ожидал.",
-  "Робуксы моментально, лучший сервис.",
-  "Гемы дешевле чем у всех!"
+  "Робаксы получил быстро, админы красавцы!"
 ];
-
-function randomChoice(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
 
 function randomDate() {
   const now = new Date();
@@ -29,49 +33,71 @@ function randomDate() {
   return date.toLocaleDateString('ru-RU');
 }
 
-function randomAvatar() {
-  const gender = Math.random() > 0.5 ? 'men' : 'women';
-  const id = Math.floor(Math.random() * 90);
-  return `https://randomuser.me/api/portraits/${gender}/${id}.jpg`;
-}
-
-function createStars(rating) {
-  return "★".repeat(rating) + "☆".repeat(5 - rating);
-}
-
-function generateReviews(count) {
-  const arr = [];
-  for (let i = 0; i < count; i++) {
-    arr.push({
-      name: randomChoice(names),
-      avatar: randomAvatar(),
-      date: randomDate(),
-      text: randomChoice(texts),
-      rating: Math.random() > 0.15 ? 5 : 4
-    });
+function avatarForName(name) {
+  if (/\s/.test(name)) { 
+    const gender = Math.random() > 0.5 ? 'men' : 'women';
+    return `https://randomuser.me/api/portraits/${gender}/${Math.floor(Math.random()*90)}.jpg`;
   }
-  return arr;
+  if (roflNames.includes(name)) return roflAvatars[Math.floor(Math.random()*roflAvatars.length)];
+  return englishAvatars[Math.floor(Math.random()*englishAvatars.length)];
 }
 
-const reviews = generateReviews(100);
+function createStars(r) { return "★".repeat(r)+"☆".repeat(5-r); }
+
+const reviews = Array.from({length: 100}, () => ({
+  name: names[Math.floor(Math.random()*names.length)],
+  avatar: "",
+  date: randomDate(),
+  text: texts[Math.floor(Math.random()*texts.length)],
+  rating: Math.random() > 0.2 ? 5 : 4
+}));
+
+reviews.forEach(r => r.avatar = avatarForName(r.name));
+
+let displayed = 0;
+const batch = 12;
+const container = document.getElementById('reviews');
 
 function renderReviews() {
-  const container = document.getElementById('reviews');
-  container.innerHTML = '';
-  reviews.forEach(r => {
+  for (let i = displayed; i < displayed+batch && i<reviews.length; i++) {
+    const r = reviews[i];
     const div = document.createElement('div');
     div.className = 'review';
     div.innerHTML = `
-      <img class="avatar" src="${r.avatar}" alt="${r.name}">
       <div class="review-content">
+        <img class="avatar" src="${r.avatar}">
         <div class="review-name">${r.name}</div>
         <div class="review-date">${r.date}</div>
         <div class="review-text">${r.text}</div>
         <div class="review-stars">${createStars(r.rating)}</div>
-      </div>
-    `;
+      </div>`;
     container.appendChild(div);
-  });
+  }
+  displayed+=batch;
+  if (displayed>=reviews.length) document.getElementById('load-more').style.display="none";
 }
-
+document.getElementById('load-more').onclick = renderReviews;
 renderReviews();
+
+/* Модалка для отзывов */
+const modal = document.getElementById('modal');
+document.getElementById('add-review-btn').onclick = ()=>modal.style.display='flex';
+document.getElementById('close-modal').onclick = ()=>modal.style.display='none';
+
+document.getElementById('submit-review').onclick = () => {
+  const name = document.getElementById('review-name').value.trim();
+  const text = document.getElementById('review-text').value.trim();
+  if (!name || !text) return alert("Заполните оба поля!");
+  const newReview = {
+    name, 
+    avatar: avatarForName(name),
+    date: new Date().toLocaleDateString('ru-RU'),
+    text,
+    rating: 5
+  };
+  reviews.unshift(newReview);
+  container.innerHTML="";
+  displayed=0;
+  renderReviews();
+  modal.style.display='none';
+};
